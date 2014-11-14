@@ -1,0 +1,11 @@
+Option_value=zeros(1,1000);
+i=1;
+while(i<=1000)
+    r1=0.3*randn(5000,1);
+    S=100;
+    Sf=r1*S;
+    S_max=max(Sf);
+    Option_value(i)=max(S_max-Sf(50),0);
+    i=i+1;
+end
+mean(Option_value)

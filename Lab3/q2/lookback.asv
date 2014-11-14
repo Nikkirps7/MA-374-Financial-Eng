@@ -1,0 +1,52 @@
+function[P]=lookback(S,T,M,r,sigma)
+    %S is the initial stock price
+    %T is the expiry time
+    %M is the number of time steps
+    %r is the risk free rate
+    %sigma is the volatility factor
+    %Here we will calculate the price of a lookback call option at t=0;
+    %calculating all paths as this is path dependent is the first step we
+    %will take to calculate the option price payoff.
+    t=T/M;
+    %u=exp(sigma*sqrt(t));
+    %d=1/u;
+    u=exp(sigma*sqrt(t)+t*(r-(sigma*sigma)/2));
+    d=exp(-1*sigma*sqrt(t)+t*(r-(sigma*sigma)/2));
+    U=zeros(2^(M),M+1);%tree storage matrix
+    %calculate the paths 2^N paths
+    i=0;
+    while(i<=2^(M-1))
+        stock=S;%starting value of the stock path
+        max_stock=S;
+        X=de2bi(i,M);%one path calculated
+        %use this path to calculate the final payoff
+        j=1;
+        while(j<=M)
+            if(X(j)==0)
+                stock=stock*u;
+            end
+            if(X(j)==1)
+                stock=stock*d;
+            end
+            max_stock=max(max_stock,stock);%maintains the max value of the path
+            j=j+1;
+        end
+        U(i+1,M+1)=max_stock-stock;%payoff calculated for put option
+        i=i+1;
+    end
+    %calculate the risk neutral measure
+    p=(exp(r*t)-d)/(u-d);
+    %backtracking the option tree to get the remaining values
+    i=M;
+    while(i>=1)
+        j=1;
+        while(j<=2^(i-1))
+            A=(p*(U(1+(2*(j-1)),i+1))+(1-p)*U(2+(2*(j-1)),i+1))*(exp(-1*r*t));
+            U(j,i)=A;
+            j=j+1;
+        end
+        i=i-1;
+    end
+    U%the option tree
+    P=U(1,1);
+end

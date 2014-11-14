@@ -1,0 +1,31 @@
+%driver to run the entire process
+i=1;
+S=100;K=100;T=1;M=100;r=0.08;sigma=0.2;%fixed parameters
+V=10;% varying upto V values each parameters
+X=zeros(1,V);
+X1=zeros(1,V);
+Y=zeros(1,V);
+%varying S
+s1=50;
+while(i<=V)
+    X(i)=optionvalueput(s1,K,r,sigma,M);
+    X1(i)=optionvaluecall(s1,K,r,sigma,M);
+    Y(i)=s1;
+    s1=s1+10;
+    i=i+1;
+end
+plot(Y,X,'r');
+hold on
+plot(Y,X1);
+%varying K
+k1=50;
+while(i<=V)
+    X(i)=optionvalueput(S,,r,sigma,M);
+    X1(i)=optionvaluecall(S,k1,r,sigma,M);
+    Y(i)=s1;
+    s1=s1+10;
+    i=i+1;
+end
+plot(Y,X,'r');
+hold on
+plot(Y,X1);
